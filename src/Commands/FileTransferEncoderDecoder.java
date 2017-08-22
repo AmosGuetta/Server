@@ -77,7 +77,7 @@ public class FileTransferEncoderDecoder implements MessageEncoderDecoder<Command
     }
 
     private Command createOthersCommand() {
-        // Create Login and WRQ and RRQ and DELRQ command.
+        // Create Login and Upload and Download and Delete command.
         if (bytes[length] != '\0') {
             length++;
             return null;
@@ -89,16 +89,16 @@ public class FileTransferEncoderDecoder implements MessageEncoderDecoder<Command
             try {
                 switch (currentOpcode) {
                     case (short) 1:
-                        command = new RRQ(currentOpcode, new String(buffer, "UTF-8"));
+                        command = new Download(currentOpcode, new String(buffer, "UTF-8"));
                         break;
                     case (short) 2:
-                        command = new WRQ(currentOpcode, new String(buffer, "UTF-8"));
+                        command = new Upload(currentOpcode, new String(buffer, "UTF-8"));
                         break;
                     case (short) 7:
                         command = new Login(currentOpcode, new String(buffer, "UTF-8"));
                         break;
                     case (short) 8:
-                        command = new DELRQ(currentOpcode, new String(buffer, "UTF-8"));
+                        command = new Delete(currentOpcode, new String(buffer, "UTF-8"));
                         break;
                 }
             } catch (UnsupportedEncodingException e) {
@@ -210,14 +210,14 @@ public class FileTransferEncoderDecoder implements MessageEncoderDecoder<Command
                 break;
 
             case (short) 6:
-                command = new DIRQ(currentOpcode);
+                command = new dir(currentOpcode);
                 currentOpcode = -1;
                 bytes = new byte[1 << 10];
                 length = 0;
                 break;
 
             case (short) 10:
-                command = new DISC(currentOpcode);
+                command = new Disconnect(currentOpcode);
                 currentOpcode = -1;
                 bytes = new byte[1 << 10];
                 length = 0;

@@ -1,8 +1,10 @@
 package Commands;
 
-import Commands.Messages.DISC;
+import Commands.Messages.Disconnect;
 import Protocol.MessagingProtocol;
 import Protocol.Connect;
+
+import static java.lang.System.exit;
 
 public class FileTransferProtocol implements MessagingProtocol<Command> {
     private CommandsHandler commandsHandler;
@@ -24,12 +26,18 @@ public class FileTransferProtocol implements MessagingProtocol<Command> {
 
     @Override
     public void process(Command message) {
-        if(message instanceof DISC) {
-            if (commandsHandler.isLoggedin(myConnectionId) && commandsHandler.checkIfthereOnlyOneClientConnected())
-                System.out.println("All the clients disconnect,the server will closing now");
-                shouldTerminate = true;
+        String clientName = commandsHandler.clients.get(myConnectionId);
+        if(message instanceof Disconnect && commandsHandler.isLoggedin(myConnectionId)) {
+            System.out.println(clientName +" is disconnected from the server");
+            if (commandsHandler.isLoggedin(myConnectionId) && commandsHandler.checkIfthereOnlyOneClientConnected()) {
+                System.out.println("All the clients disconnected from thr server,therefore the server will closing now");
+                exit(1);
+            }
+            shouldTerminate = true;
+
         }
-        message.execute(commandsHandler,myConnectionId,connectionsHandler);
+        else
+            message.execute(commandsHandler,myConnectionId,connectionsHandler);
     }
     @Override
     public boolean shouldTerminate() {

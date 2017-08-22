@@ -33,11 +33,11 @@ public abstract class BaseServer<T> implements Server<T> {
         try (ServerSocket serverSock = new ServerSocket(port)) {
 
             this.sock = serverSock; //just to be able to close
-            System.out.println("The server is on the air, and waiting for clients");
+            System.out.println("The server is on the air");
             while (!Thread.currentThread().isInterrupted()) {
 
                 Socket clientSock = serverSock.accept();
-                System.out.println("Client number: " + myConnectionID + " is connected now");
+                System.out.println("Connecting ... Waiting for client "+ myConnectionID +" to login");
 
                 MessagingProtocol<T> protocol = protocolFactory.get();
                 protocol.start(myConnectionID, connections);

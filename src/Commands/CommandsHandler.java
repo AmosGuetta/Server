@@ -11,7 +11,7 @@ public class CommandsHandler {
     private Object deleteObj;
     private final String serverFilesPath = "Files"; // The server files path.
     private HashMap<Short, String> errorsTable = new HashMap<Short, String>(); // Error table.
-    private HashMap<Integer, String> clients = new HashMap<Integer, String>();  //  The clients names.
+    public HashMap<Integer, String> clients = new HashMap<Integer, String>();  //  The clients names.
     private HashMap<Integer, String> fileName = new HashMap<Integer, String>(); // The files of each clients.
     private HashMap<Integer, Short> lastPacketBlockNumber = new HashMap<Integer, Short>(); // The last block number packet, of each clients.
     private HashMap<Integer, ArrayList<DATA>> requestFilePackets = new HashMap<Integer, ArrayList<DATA>>(); // The files request of each clients.
@@ -21,11 +21,11 @@ public class CommandsHandler {
         //Constructor.
         this.deleteObj = new Object();
         this.errorsTable.put((short) 0, "Not defined, see error message (if any).");
-        this.errorsTable.put((short) 1, "File not found - RRQ \\ DELRQ of non-existing file");
+        this.errorsTable.put((short) 1, "File not found - Download \\ Delete of non-existing file");
         this.errorsTable.put((short) 2, "Access violation - File cannot be written, read or deleted.");
         this.errorsTable.put((short) 3, "Disk full or allocation exceeded - No room in disk");
         this.errorsTable.put((short) 4, "Illegal TFTP operation - Unknown Opcode.");
-        this.errorsTable.put((short) 5, "File already exists - File name exists on WRQ.");
+        this.errorsTable.put((short) 5, "File already exists - File name exists on Upload.");
         this.errorsTable.put((short) 6, "User not logged in - Any opcode received before Login completes.");
         this.errorsTable.put((short) 7, "User already logged in - Login username already connected.");
     }
@@ -96,7 +96,8 @@ public class CommandsHandler {
             clients.put(myConnectionId,username);
             ACK ack = new ACK((short)4,(short)0);
             connectionsHandler.send(myConnectionId,ack);
-            System.out.println("Client number: " + myConnectionId + " is login now");
+            System.out.println(username +" " + "is login now");
+            //System.out.println("Client" + myConnectionId + " :is login now");
             }
         }
 
@@ -108,6 +109,9 @@ public class CommandsHandler {
             fileName.remove(myConnectionId);
             busyFiles.remove(myConnectionId);
             requestFilePackets.remove(myConnectionId);
+
+            Disconnect disconnected = new Disconnect((short)10);
+            connectionsHandler.send(myConnectionId,disconnected);
             connectionsHandler.disconnect(myConnectionId);
         }
         else{  // User not logged and want to do some operations.
@@ -380,55 +384,8 @@ public class CommandsHandler {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public HashMap<Integer, String> getClients() {
+        return clients;
+    }
 }
 
